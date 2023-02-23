@@ -27,4 +27,13 @@ export const resolvers = {
       return Company.findById(parent.companyId);
     },
   },
+  // this is a way of creating assiosiation with the types... lecture 21 of graphql by example course for explanation
+  // the parent in this situation will be the Company type
+  Company: {
+    // a func to resolve the jobs field of this type
+    jobs: (parent, args) => {
+      // the findAll func can take a filter func
+      return Job.findAll((job) => job.companyId === parent.id);
+    },
+  },
 };
