@@ -61,3 +61,23 @@ export async function getCompany(id) {
   const { company } = await request(GRAPHQL_URL, query, variables);
   return company;
 }
+
+export async function creatJob(input) {
+  const query = gql`
+    mutation CreateJobMutation($input: CreateJobInput!) {
+      # can use an alias when doing a mutation - this way this name is returned rather than the strange name of the mutation 'createJob'
+      job: createJob(input: $input) {
+        id
+        title
+        company {
+          id
+          name
+        }
+      }
+    }
+  `;
+  const variables = { input };
+  // the alias field vs mutation name
+  const { job } = await request(GRAPHQL_URL, query, variables);
+  return job;
+}

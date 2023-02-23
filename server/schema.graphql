@@ -4,16 +4,29 @@ type Query {
   company(id: ID!): Company
 }
 
+type Mutation {
+  createJob(input: CreateJobInput!): Job
+}
+
 type Company {
   id: ID!
   name: String!
   description: String
+  # create assiosiation
   jobs: [Job!]
 }
 
 type Job {
   id: ID!
   title: String!
+  # create assiosiation
   company: Company!
+  description: String
+}
+
+# this is input type which can only be used as input vs the 'output' type which is the default type.. scalar types can be used as both input and output
+input CreateJobInput {
+  title: String!
+  companyId: ID!
   description: String
 }

@@ -8,14 +8,21 @@ import { Job, Company } from "./db.js";
 
 export const resolvers = {
   Query: {
-    // can denote arg with _ to say unused
-    job: (_parent, { id }) => {
+    // can denote arg with _ to say unused,, can use root because we are at the top level Query
+    job: (_root, { id }) => {
       // can destructure args to get the prop you want, in this case.. id
       return Job.findById(id);
     },
     jobs: async () => Job.findAll(),
     company: (_parent, args) => {
       return Company.findById(args.id);
+    },
+  },
+
+  Mutation: {
+    // destructure args based on what is passed through.. we can receiving that one input type
+    createJob: (_root, { input }) => {
+      return Job.create(input);
     },
   },
   // this resolver is for the Job Type.. which is requested by Query Type - [Jobs!] (schema).. so just like we have a resolver for the Query - job field.. we can have a resolver for the Job - company field
