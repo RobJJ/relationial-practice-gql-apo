@@ -62,7 +62,8 @@ export async function getCompany(id) {
   return company;
 }
 
-export async function creatJob(input) {
+export async function createJob(input) {
+  // could simplify what is requested from server here.. we only need id, but keeping it in for reference
   const query = gql`
     mutation CreateJobMutation($input: CreateJobInput!) {
       # can use an alias when doing a mutation - this way this name is returned rather than the strange name of the mutation 'createJob'
