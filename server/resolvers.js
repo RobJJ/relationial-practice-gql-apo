@@ -27,6 +27,7 @@ export const resolvers = {
     deleteJob: (_parent, { input }) => {
       return Job.delete(input.id);
     },
+    updateJob: (_parent, { input }) => Job.update(input),
   },
   // this resolver is for the Job Type.. which is requested by Query Type - [Jobs!] (schema).. so just like we have a resolver for the Query - job field.. we can have a resolver for the Job - company field
   // the first argument for the Job type resolver - company field, is parent object,, which is the Job..
