@@ -9,6 +9,7 @@ function JobDetail() {
   const { jobId } = useParams();
 
   useEffect(() => {
+    // shorthand to setJeb with promise data then((job) => setJob(job))
     getJob(jobId).then(setJob);
     // if jobId changes,, func reruns
   }, [jobId]);

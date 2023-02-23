@@ -17,6 +17,7 @@ export async function getJobs() {
     }
   `;
   const { jobs } = await request(GRAPHQL_URL, query);
+  // this returns a promise which you are returning - so be mindful when consuming this
   return jobs;
   //   console.log(data); - this gives us jobs: array... so destructure
 }
@@ -41,4 +42,18 @@ export async function getJob(id) {
   const { job } = await request(GRAPHQL_URL, query, variables);
   return job;
   //   console.log(data); - this gives us jobs: array... so destructure
+}
+
+export async function getCompany(id) {
+  const query = gql`
+    query CompanyQuery($id: ID!) {
+      company(id: $id) {
+        name
+        description
+      }
+    }
+  `;
+  const variables = { id };
+  const { company } = await request(GRAPHQL_URL, query, variables);
+  return company;
 }
