@@ -1,5 +1,6 @@
 // going to use graphql-request library here... which pretty much does a normal fetch() request but formats the code in graphql format for us!
 import { request, gql } from "graphql-request";
+import { getAccessToken } from "../auth";
 
 const GRAPHQL_URL = "http://localhost:9000/graphql";
 
@@ -63,22 +64,18 @@ export async function getCompany(id) {
 }
 
 export async function createJob(input) {
-  // could simplify what is requested from server here.. we only need id, but keeping it in for reference
   const query = gql`
     mutation CreateJobMutation($input: CreateJobInput!) {
       # can use an alias when doing a mutation - this way this name is returned rather than the strange name of the mutation 'createJob'
       job: createJob(input: $input) {
         id
-        title
-        company {
-          id
-          name
-        }
       }
     }
   `;
   const variables = { input };
   // the alias field vs mutation name
-  const { job } = await request(GRAPHQL_URL, query, variables);
+  // this request func can have a 4th arugment which is the headers that we ned for JWT.. getAccessToken func -> localstorage look up
+  const headers = { Authorization: "Bearer " + getAccessToken() };
+  const { job } = await request(GRAPHQL_URL, query, variables, headers);
   return job;
 }

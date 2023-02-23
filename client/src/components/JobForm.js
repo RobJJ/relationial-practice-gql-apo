@@ -11,8 +11,8 @@ function JobForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     // console.log("should post a new job:", { title, description });
-    const companyId = `pVbRRBQtMVw6lUAkj1k43`; // FIXME
-    const job = await createJob({ title, companyId, description });
+    // const companyId = `pVbRRBQtMVw6lUAkj1k43`; // not needed as param as server handles this now!
+    const job = await createJob({ title, description });
     navigate(`/jobs/${job.id}`);
   };
 

@@ -20,9 +20,15 @@ export const resolvers = {
   },
 
   Mutation: {
-    // destructure args based on what is passed through.. we can receiving that one input type
-    createJob: (_root, { input }) => {
-      return Job.create(input);
+    // destructure args based on what is passed through.. we can receiving that one input type... also destructure the auth property from the context param which is the 3rd param
+    createJob: (_root, { input }, { user }) => {
+      // this is checking that the user is logged in!!
+      // extra note below
+      if (!user) {
+        throw new Error("Unauthorized!!");
+      }
+      // make sure the user who creates the job is creating a job for the company they work for..
+      return Job.create({ ...input, companyId: user.companyId });
     },
     deleteJob: (_parent, { input }) => {
       return Job.delete(input.id);
@@ -48,3 +54,6 @@ export const resolvers = {
     },
   },
 };
+
+// In our situation here in this app... each user is attached to a company.. we can take this prop off the user to help know what company the job is created for!
+// the user object contains all the info..

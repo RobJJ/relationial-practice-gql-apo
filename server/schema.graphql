@@ -29,7 +29,8 @@ type Job {
 # this is input type which can only be used as input vs the 'output' type which is the default type.. scalar types can be used as both input and output
 input CreateJobInput {
   title: String!
-  companyId: ID!
+  # removing this field because the server will handle it!
+  # companyId: ID!
   description: String
 }
 

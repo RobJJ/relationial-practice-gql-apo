@@ -36,8 +36,18 @@ app.post("/login", async (req, res) => {
 
 // read the file relative to where we are, and char encoding
 const typeDefs = await readFile("./schema.graphql", "utf-8");
-// create our apollo server and pass in the typeDefs & resolvers
-const apolloServer = new ApolloServer({ typeDefs, resolvers });
+// params has req, res objects.. we going to return some data for our resolver to use.. auth and company id
+const context = async ({ req }) => {
+  if (req.auth) {
+    // sub in the req token is the userId
+    const user = await User.findById(req.auth.sub);
+    return { user };
+  }
+
+  return {};
+};
+// create our apollo server and pass in the typeDefs & resolvers,, and finally the context!
+const apolloServer = new ApolloServer({ typeDefs, resolvers, context });
 await apolloServer.start();
 // plug the apollo server into the express application
 apolloServer.applyMiddleware({ app, path: "/graphql" });
