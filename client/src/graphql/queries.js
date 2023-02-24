@@ -136,7 +136,7 @@ export async function getCompany(id) {
   // const { company } = await request(GRAPHQL_URL, query, variables);
   return company;
 }
-
+// not needed anymore.. replaced with useMutation
 export async function createJob(input) {
   const mutation = gql`
     mutation CreateJobMutation($input: CreateJobInput!) {
