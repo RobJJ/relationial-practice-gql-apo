@@ -35,7 +35,7 @@ const JOB_DETAIL_FRAGMENT = gql`
   }
 `;
 
-const JOB_QUERY = gql`
+export const JOB_QUERY = gql`
   query JobQuery($id: ID!) {
     job(id: $id) {
       ...JobDetail
@@ -52,6 +52,18 @@ export const JOBS_QUERY = gql`
       company {
         id
         name
+      }
+    }
+  }
+`;
+export const COMPANY_QUERY = gql`
+  query CompanyQuery($id: ID!) {
+    company(id: $id) {
+      name
+      description
+      jobs {
+        id
+        title
       }
     }
   }
@@ -77,7 +89,7 @@ export async function getJobs() {
   // return jobs;
   //   console.log(data); - this gives us jobs: array... so destructure
 }
-
+// function no longer needed because of useQuery and our custom hook!
 export async function getJob(id) {
   // declared the JobQuery as reusable above..
 
@@ -92,7 +104,7 @@ export async function getJob(id) {
   return job;
   //   console.log(data); - this gives us jobs: array... so destructure
 }
-
+// not needed either anymore
 export async function getCompany(id) {
   const query = gql`
     query CompanyQuery($id: ID!) {
