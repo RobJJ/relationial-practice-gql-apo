@@ -23,6 +23,28 @@ const client = new ApolloClient({
   // },
 });
 
+const JOB_DETAIL_FRAGMENT = gql`
+  fragment JobDetail on Job {
+    id
+    title
+    company {
+      id
+      name
+    }
+    description
+  }
+`;
+
+const JOB_QUERY = gql`
+  query JobQuery($id: ID!) {
+    job(id: $id) {
+      ...JobDetail
+    }
+  }
+  # can add a frament expression into the template literable.. its like inserting a varible
+  ${JOB_DETAIL_FRAGMENT}
+`;
+
 export async function getJobs() {
   // not exactly the same as the apollo-server, but mimicing
   const query = gql`
@@ -52,25 +74,13 @@ export async function getJobs() {
 }
 
 export async function getJob(id) {
-  // not exactly the same as the apollo-server, but mimicing
-  const query = gql`
-    query JobQuery($id: ID!) {
-      job(id: $id) {
-        id
-        title
-        company {
-          id
-          name
-        }
-        description
-      }
-    }
-  `;
+  // declared the JobQuery as reusable above..
+
   const variables = { id };
   // APOLLO RESPLACEMENT
   const {
     data: { job },
-  } = await client.query({ query, variables });
+  } = await client.query({ query: JOB_QUERY, variables });
   // graphQL way -
   // can take a 3rd argument which are variables obj
   // const { job } = await request(GRAPHQL_URL, query, variables);
@@ -106,9 +116,10 @@ export async function createJob(input) {
     mutation CreateJobMutation($input: CreateJobInput!) {
       # can use an alias when doing a mutation - this way this name is returned rather than the strange name of the mutation 'createJob'
       job: createJob(input: $input) {
-        id
+        ...JobDetail
       }
     }
+    ${JOB_DETAIL_FRAGMENT}
   `;
   const variables = { input };
   // the alias field vs mutation name
@@ -121,9 +132,22 @@ export async function createJob(input) {
   const context = {
     headers: { Authorization: "Bearer " + getAccessToken() },
   };
+  // we added extra props to get returned when making this createJob request so we have the data needed for the new job component without having to send another request to the server.. so we can write this object to the cache that can then be used for the user when they are redirected to the new job listing without having to fetch more data!! we can write directly to cache by passing a 4th argument to the func below..the update function is fired *after* the mutation is successful!! it gets two arguments.. the cache obj and the result obj which is the same result from calling client.mutate
   const {
     data: { job },
-  } = await client.mutate({ mutation, variables, context });
+  } = await client.mutate({
+    mutation,
+    variables,
+    context,
+    // manually creating cache data the same way as the getJob query - instead of making request to server..
+    update: (cache, { data: { job } }) => {
+      cache.writeQuery({
+        query: JOB_QUERY,
+        variables: { id: job.id },
+        data: { job },
+      });
+    },
+  });
   // graphql way.. changed query var above to mutation to be more clear
   // const { job } = await request(GRAPHQL_URL, query, variables, headers);
   return job;
