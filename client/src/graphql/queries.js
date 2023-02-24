@@ -1,7 +1,7 @@
 // going to use graphql-request library here... which pretty much does a normal fetch() request but formats the code in graphql format for us!
 import { ApolloClient, gql, InMemoryCache } from "@apollo/client";
-// removed gql from graphql
-import { request } from "graphql-request";
+// removed this to use apollo-client instead
+// import { request, gql } from "graphql-request";
 import { getAccessToken } from "../auth";
 
 const GRAPHQL_URL = "http://localhost:9000/graphql";
@@ -9,6 +9,18 @@ const GRAPHQL_URL = "http://localhost:9000/graphql";
 const client = new ApolloClient({
   uri: GRAPHQL_URL,
   cache: new InMemoryCache(),
+  // this is where you can set default policies for how the apollo-client uses the cache with requests.. or set individually at the function level below
+  // defaultOptions: {
+  //   query: {
+  //     fetchPolicy: "network-only",
+  //   },
+  //   mutate: {
+  //     fetchPolicy: "network-only",
+  //   },
+  //   watchQuery: {
+  //     fetchPolicy: "network-only",
+  //   },
+  // },
 });
 
 export async function getJobs() {
@@ -19,6 +31,7 @@ export async function getJobs() {
         id
         title
         company {
+          id
           name
         }
       }
@@ -28,7 +41,8 @@ export async function getJobs() {
   // this result is the data, error, loading object...
   // could also destructure like this...
   // const { data: {jobs} } = await client.query({ query });
-  const result = await client.query({ query });
+  // so when making an apollo request, we can also change how the default caching system works...by default its looking in its cache first and not making this call if it thinks nothing has changed.. lets change that! 2nd param for query: fetchPolicy.. this policy has diff options that can be used to specify how you want the requests to work
+  const result = await client.query({ query, fetchPolicy: "network-only" });
   return result.data.jobs;
   // OLD GRAPHQL WAY OF DOING THINGS
   // const { jobs } = await request(GRAPHQL_URL, query);

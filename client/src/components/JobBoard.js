@@ -9,6 +9,7 @@ function JobBoard() {
   const [error, setError] = useState(false);
   //
   useEffect(() => {
+    // console.log("Hey im being called");
     getJobs()
       .then((jobs) => setJobs(jobs))
       .catch((err) => setError(true));
