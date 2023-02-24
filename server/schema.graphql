@@ -41,6 +41,7 @@ input DeleteJobInput {
 input UpdateJobInput {
   id: ID!
   title: String!
-  companyId: ID!
+  # This field will be handled by server token
+  # companyId: ID!
   description: String
 }

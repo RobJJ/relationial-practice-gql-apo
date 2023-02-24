@@ -5,6 +5,12 @@
 //
 // need to .js extension if using import keyword for node.js
 import { Job, Company } from "./db.js";
+// create a rejectIf function to reuse through code for auth checks
+function rejectIf(condition) {
+  if (condition) {
+    throw new Error("Unauthorized!");
+  }
+}
 
 export const resolvers = {
   Query: {
@@ -24,16 +30,27 @@ export const resolvers = {
     createJob: (_root, { input }, { user }) => {
       // this is checking that the user is logged in!!
       // extra note below
-      if (!user) {
-        throw new Error("Unauthorized!!");
-      }
+      // if (!user) {
+      //   throw new Error("Unauthorized!!");
+      // }
+      rejectIf(!user);
       // make sure the user who creates the job is creating a job for the company they work for..
       return Job.create({ ...input, companyId: user.companyId });
     },
-    deleteJob: (_parent, { input }) => {
+    deleteJob: async (_parent, { input }, { user }) => {
+      rejectIf(!user);
+      const job = await Job.findById(input);
+      rejectIf(user.companyId !== job.companyId);
       return Job.delete(input.id);
     },
-    updateJob: (_parent, { input }) => Job.update(input),
+    updateJob: async (_parent, { input }, { user }) => {
+      rejectIf(!user);
+      // find job, using input.id.. we have to specify .id because the input schema has multiple fields
+      const job = await Job.findById(input.id);
+      rejectIf(user.companyId !== job.companyId);
+      // need to spread and then add companyId from the user context
+      return Job.update({ ...input, companyId: user.companyId });
+    },
   },
   // this resolver is for the Job Type.. which is requested by Query Type - [Jobs!] (schema).. so just like we have a resolver for the Query - job field.. we can have a resolver for the Job - company field
   // the first argument for the Job type resolver - company field, is parent object,, which is the Job..

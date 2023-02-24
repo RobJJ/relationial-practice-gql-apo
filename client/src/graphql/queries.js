@@ -75,6 +75,7 @@ export async function createJob(input) {
   const variables = { input };
   // the alias field vs mutation name
   // this request func can have a 4th arugment which is the headers that we ned for JWT.. getAccessToken func -> localstorage look up
+  // remember to leave space after "Bearer "
   const headers = { Authorization: "Bearer " + getAccessToken() };
   const { job } = await request(GRAPHQL_URL, query, variables, headers);
   return job;
