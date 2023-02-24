@@ -68,6 +68,15 @@ export const COMPANY_QUERY = gql`
     }
   }
 `;
+export const CREATE_JOB_MUTATION = gql`
+  mutation CreateJobMutation($input: CreateJobInput!) {
+    # can use an alias when doing a mutation - this way this name is returned rather than the strange name of the mutation 'createJob'
+    job: createJob(input: $input) {
+      ...JobDetail
+    }
+  }
+  ${JOB_DETAIL_FRAGMENT}
+`;
 //
 // not even using this function anymore because of the useQuery hook!!
 export async function getJobs() {
