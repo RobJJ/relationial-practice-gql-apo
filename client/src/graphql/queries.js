@@ -6,7 +6,7 @@ import { getAccessToken } from "../auth";
 
 const GRAPHQL_URL = "http://localhost:9000/graphql";
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   uri: GRAPHQL_URL,
   cache: new InMemoryCache(),
   // this is where you can set default policies for how the apollo-client uses the cache with requests.. or set individually at the function level below
@@ -44,27 +44,32 @@ const JOB_QUERY = gql`
   # can add a frament expression into the template literable.. its like inserting a varible
   ${JOB_DETAIL_FRAGMENT}
 `;
-
-export async function getJobs() {
-  // not exactly the same as the apollo-server, but mimicing
-  const query = gql`
-    query JobsQuery {
-      jobs {
+export const JOBS_QUERY = gql`
+  query JobsQuery {
+    jobs {
+      id
+      title
+      company {
         id
-        title
-        company {
-          id
-          name
-        }
+        name
       }
     }
-  `;
+  }
+`;
+//
+// not even using this function anymore because of the useQuery hook!!
+export async function getJobs() {
+  // not exactly the same as the apollo-server, but mimicing
+
   // APOLLO WAY
   // this result is the data, error, loading object...
   // could also destructure like this...
   // const { data: {jobs} } = await client.query({ query });
   // so when making an apollo request, we can also change how the default caching system works...by default its looking in its cache first and not making this call if it thinks nothing has changed.. lets change that! 2nd param for query: fetchPolicy.. this policy has diff options that can be used to specify how you want the requests to work
-  const result = await client.query({ query, fetchPolicy: "network-only" });
+  const result = await client.query({
+    query: JOBS_QUERY,
+    fetchPolicy: "network-only",
+  });
   return result.data.jobs;
   // OLD GRAPHQL WAY OF DOING THINGS
   // const { jobs } = await request(GRAPHQL_URL, query);
